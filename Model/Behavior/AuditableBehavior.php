@@ -125,11 +125,16 @@ class AuditableBehavior extends ModelBehavior {
     } else if ( $Model->hasMethod( 'current_user' ) ) {
       $source = $Model->current_user();
     }
+	
+	$model_long_name = $Model->alias;
+	if (!is_null($Model->plugin)) {
+		$model_long_name = $Model->plugin.'.'.$Model->alias;
+	}
     
     $data = array(
       'Audit' => array(
         'event'     => $created ? 'CREATE' : 'EDIT',
-        'model'     => $Model->alias,
+        'model'     => $model_long_name,
         'entity_id' => $Model->id,
         'json_object' => json_encode( $audit ),
         'source_id' => isset( $source['id'] ) ? $source['id'] : null,
@@ -245,10 +250,16 @@ class AuditableBehavior extends ModelBehavior {
     }
     
     $audit = array( $Model->alias => $this->_original[$Model->alias] );
+	
+	$model_long_name = $Model->alias;
+	if (!is_null($Model->plugin)) {
+		$model_long_name = $Model->plugin.'.'.$Model->alias;
+	}
+	
     $data  = array(
       'Audit' => array(
         'event'       => 'DELETE',
-        'model'       => $Model->alias,
+        'model'       => $model_long_name,
         'entity_id'   => $Model->id,
         'json_object' => json_encode( $audit ),
         'source_id'   => isset( $source['id'] ) ? $source['id'] : null,
